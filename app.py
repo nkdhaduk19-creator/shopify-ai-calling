@@ -33,7 +33,7 @@ def shopify_webhook():
         print("📦 JSON DATA:", data)
 
         # 👉 FORCE TEST NUMBER (trial fix)
-        phone = "+919033074408"
+        phone = "+91 90330 74408"
         print("📞 FINAL PHONE:", phone)
 
         url = "https://api.vapi.ai/call"

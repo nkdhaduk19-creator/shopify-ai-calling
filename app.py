@@ -25,11 +25,10 @@ def shopify_webhook():
     try:
         print("\n🔥 WEBHOOK HIT 🔥")
 
-        data = request.json
-        print(json.dumps(data, indent=2))
+        data = request.get_json(force=True, silent=True)
+        print("📦 RAW DATA:", data)
 
-        # ❌ अभी ignore कर (trial में issue होता है)
-        # 👉 हमेशा verified number पे call भेज
+        # 👉 test number (trial fix)
         phone = "+919033074408"
 
         print("📞 FINAL PHONE:", phone)
@@ -37,7 +36,7 @@ def shopify_webhook():
         url = "https://api.vapi.ai/call"
 
         payload = {
-            "assistantId": "d716bf80-625e-4247-b0a8-382128836042",  # ⚠️ IMPORTANT
+            "assistantId": "d716bf80-625e-4247-b0a8-382128836042",
             "customer": {
                 "number": phone
             },

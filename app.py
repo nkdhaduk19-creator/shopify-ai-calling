@@ -14,13 +14,17 @@ def home():
 
 @app.route('/shopify-webhook', methods=['POST'])
 def shopify_webhook():
+    print("\n======================")
+    print("🔥 WEBHOOK HIT 🔥")
+    print("======================")
+
     try:
         data = request.json
+        print("📦 DATA RECEIVED")
 
-        print("\n🔥🔥 WEBHOOK HIT 🔥🔥")
+        # 👇 FORCE PRINT
         print(json.dumps(data, indent=2))
 
-        # 🔍 GET PHONE FROM ALL POSSIBLE PLACES
         phone = None
 
         if data.get("customer") and data["customer"].get("phone"):
@@ -34,11 +38,11 @@ def shopify_webhook():
 
         print("📞 RAW PHONE:", phone)
 
+        # ❗ FORCE CALL EVEN IF PHONE MISSING
         if not phone:
-            print("❌ PHONE NOT FOUND")
-            return "No phone", 200
+            print("⚠️ NO PHONE → USING TEST NUMBER")
+            phone = "+919033074408"
 
-        # 🔧 CLEAN PHONE
         phone = str(phone).replace(" ", "").replace("-", "")
 
         if not phone.startswith("+"):
@@ -46,30 +50,29 @@ def shopify_webhook():
 
         print("📞 FINAL PHONE:", phone)
 
-        # 🚀 CALL VAPI
         url = "https://api.vapi.ai/call"
 
-       payload = {
-    "customer": {
-        "number": phone
-    },
-    "phoneNumber": "+14782156434",  # 👈 VERY IMPORTANT (tera Twilio number)
-    "assistant": {
-        "firstMessage": "Namaste! Aapne NR Skins se order place kiya hai. Kya aap confirm karte ho?"
-    }
-}
+        payload = {
+            "customer": {
+                "number": phone
+            },
+            "phoneNumber": "+14782156434",  # 🔥 MUST
+            "assistant": {
+                "firstMessage": "Namaste! Test call hai. Kya aap sun pa rahe ho?"
+            }
+        }
 
         headers = {
             "Authorization": f"Bearer {VAPI_API_KEY}",
             "Content-Type": "application/json"
         }
 
-        print("🚀 SENDING TO VAPI...")
+        print("🚀 CALLING VAPI NOW...")
 
         response = requests.post(url, json=payload, headers=headers)
 
-        print("📞 VAPI STATUS:", response.status_code)
-        print("📞 VAPI RESPONSE:", response.text)
+        print("📞 STATUS:", response.status_code)
+        print("📞 RESPONSE:", response.text)
 
     except Exception as e:
         print("❌ ERROR:", str(e))

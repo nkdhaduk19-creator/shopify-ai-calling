@@ -43,6 +43,10 @@ def test_call():
     }
 
     response = requests.post(url, json=payload, headers=headers)
+print("🚀 SENDING REQUEST...")
+print("📦 PAYLOAD:", payload)
+
+response = requests.post(url, json=payload, headers=headers)
 
     print("📞 STATUS:", response.status_code)
     print("📞 RESPONSE:", response.text)

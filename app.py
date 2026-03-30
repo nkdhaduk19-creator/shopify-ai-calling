@@ -49,14 +49,15 @@ def shopify_webhook():
         # 🚀 CALL VAPI
         url = "https://api.vapi.ai/call"
 
-        payload = {
-            "customer": {
-                "number": phone
-            },
-            "assistant": {
-                "firstMessage": "Namaste! Aapne NR Skins se order place kiya hai. Kya aap confirm karte ho?"
-            }
-        }
+       payload = {
+    "customer": {
+        "number": phone
+    },
+    "phoneNumber": "+14782156434",  # 👈 VERY IMPORTANT (tera Twilio number)
+    "assistant": {
+        "firstMessage": "Namaste! Aapne NR Skins se order place kiya hai. Kya aap confirm karte ho?"
+    }
+}
 
         headers = {
             "Authorization": f"Bearer {VAPI_API_KEY}",

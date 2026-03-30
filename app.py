@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__)
 
-VAPI_API_KEY = "cb25bf63-9caa-4719-a5fc-55bd74a7116a"
+VAPI_API_KEY = "34d192af-d20f-40cd-a518-a7ce979bdd85"
 
 PORT = int(os.environ.get("PORT", 5000))
 

@@ -7,13 +7,13 @@ app = Flask(__name__)
 VAPI_API_KEY = "cb25bf63-9caa-4719-a5fc-55bd74a7116a"
 
 
-# 🟢 HOME ROUTE
+# 🟢 HOME
 @app.route('/')
 def home():
     return "Server Running ✅"
 
 
-# 🟢 TEST ROUTE
+# 🟢 TEST
 @app.route('/test')
 def test():
     return "Working ✅"
@@ -24,31 +24,35 @@ def test():
 def shopify_webhook():
     data = request.json
 
-    print("🔥 SHOPIFY WEBHOOK:", data)
+    print("🔥 SHOPIFY WEBHOOK HIT")
+    print("📦 FULL DATA:", data)
 
     customer = data.get("customer", {})
-    
-    # 🔥 FIXED PHONE LOGIC
+
+    # 🔥 STRONG PHONE EXTRACTION
     phone = (
         customer.get("phone") or
         data.get("billing_address", {}).get("phone") or
-        data.get("shipping_address", {}).get("phone")
+        data.get("shipping_address", {}).get("phone") or
+        data.get("phone")
     )
+
+    print("📞 RAW PHONE:", phone)
 
     name = customer.get("first_name", "Customer")
     order_id = data.get("id")
 
-    print("📞 FINAL PHONE:", phone)
-    print("Customer:", name, "Order ID:", order_id)
-
     if not phone:
-        print("❌ No phone number found")
+        print("❌ NO PHONE FOUND")
         return "No phone", 200
 
-    # 📞 Format fix
-    phone = phone.replace(" ", "")
+    # 📞 CLEAN PHONE
+    phone = str(phone).replace(" ", "").replace("-", "")
+    
     if not phone.startswith("+"):
         phone = "+91" + phone
+
+    print("📞 FINAL PHONE:", phone)
 
     try:
         response = requests.post(
@@ -76,12 +80,12 @@ def shopify_webhook():
         print("📞 VAPI CALL RESPONSE:", response.text)
 
     except Exception as e:
-        print("❌ Call error:", str(e))
+        print("❌ VAPI ERROR:", str(e))
 
     return "OK", 200
 
 
-# 🟢 VAPI RESPONSE WEBHOOK
+# 🟢 VAPI RESPONSE
 @app.route('/vapi-response', methods=['POST'])
 def vapi_response():
     data = request.json
@@ -94,22 +98,22 @@ def vapi_response():
     order_id = metadata.get("order_id")
 
     if not order_id:
-        print("❌ No order ID")
+        print("❌ NO ORDER ID")
         return "OK", 200
 
-    # 🧠 YES / NO detection
+    # 🧠 YES / NO LOGIC
     if any(word in transcript for word in ["yes", "haan", "confirm", "kar do"]):
-        print(f"✅ Order {order_id} CONFIRMED")
+        print(f"✅ ORDER {order_id} CONFIRMED")
 
     elif any(word in transcript for word in ["no", "nahi", "cancel", "mat"]):
-        print(f"❌ Order {order_id} CANCELLED")
+        print(f"❌ ORDER {order_id} CANCELLED")
 
     else:
-        print(f"⚠️ Order {order_id} unclear response")
+        print(f"⚠️ ORDER {order_id} UNCLEAR RESPONSE")
 
     return "OK", 200
 
 
-# 🚀 SERVER RUN
+# 🚀 RUN
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

@@ -37,7 +37,7 @@ def shopify_webhook():
         url = "https://api.vapi.ai/call"
 
         payload = {
-            "assistantId": "REPLACE_WITH_YOUR_ASSISTANT_ID",  # ⚠️ IMPORTANT
+            "assistantId": "d716bf80-625e-4247-b0a8-382128836042",  # ⚠️ IMPORTANT
             "customer": {
                 "number": phone
             },

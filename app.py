@@ -7,10 +7,9 @@ app = Flask(__name__)
 
 VAPI_API_KEY = "cb25bf63-9caa-4719-a5fc-55bd74a7116a"
 
-# Render port
 PORT = int(os.environ.get("PORT", 5000))
 
-print("🔥🔥 LATEST CODE DEPLOYED 🔥🔥")
+print("🔥🔥 FINAL WORKING CODE 🔥🔥")
 
 
 @app.route('/')
@@ -18,19 +17,20 @@ def home():
     return "Server Running ✅"
 
 
-# =========================
-# 🧪 TEST CALL (IMPORTANT)
-# =========================
 @app.route('/test-call')
 def test_call():
-    print("🚀 MANUAL TEST CALL")
-
-    phone = "+919033074408"
+    phone = "+919033074408"  # 👈 apna number
 
     url = "https://api.vapi.ai/call"
 
     payload = {
-        "assistantId": "d716bf80-625e-4247-b0a8-382128836042",
+        "assistant": {
+            "model": {
+                "provider": "openai",
+                "model": "gpt-4.1"
+            },
+            "firstMessage": "Namaste! Test call hai. Kya aap sun pa rahe ho?"
+        },
         "customer": {
             "number": phone
         },
@@ -47,33 +47,29 @@ def test_call():
     print("📞 STATUS:", response.status_code)
     print("📞 RESPONSE:", response.text)
 
-    return "CALL TRIGGERED"
+    return "CALL TRIGGERED", 200
 
 
-# =========================
-# 🛒 SHOPIFY WEBHOOK
-# =========================
-@app.route('/shopify-webhook', methods=['POST', 'GET'])
+@app.route('/shopify-webhook', methods=['POST'])
 def shopify_webhook():
-    print("🚨 WEBHOOK TRIGGERED 🚨")
+    print("🔥 SHOPIFY WEBHOOK HIT")
 
     try:
-        print("📦 METHOD:", request.method)
-        print("📦 HEADERS:", dict(request.headers))
-        print("📦 RAW BODY:", request.data)
-
         data = request.get_json(force=True, silent=True)
-        print("📦 JSON DATA:", data)
+        print(json.dumps(data, indent=2))
 
-        # 👉 Trial fix (force verified number)
-        phone = "+919033074408"
-
-        print("📞 FINAL PHONE:", phone)
+        phone = "+919033074408"  # temp test
 
         url = "https://api.vapi.ai/call"
 
         payload = {
-            "assistantId": "d716bf80-625e-4247-b0a8-382128836042",
+            "assistant": {
+                "model": {
+                    "provider": "openai",
+                    "model": "gpt-4.1"
+                },
+                "firstMessage": "Namaste! Aapne NR Skins se order place kiya hai. Kya aap confirm karte ho?"
+            },
             "customer": {
                 "number": phone
             },
@@ -85,15 +81,7 @@ def shopify_webhook():
             "Content-Type": "application/json"
         }
 
-        print("🚀 CALLING VAPI...")
-        print("📤 PAYLOAD:", payload)
-
-        response = requests.post(
-            url,
-            json=payload,
-            headers=headers,
-            timeout=15
-        )
+        response = requests.post(url, json=payload, headers=headers)
 
         print("📞 STATUS:", response.status_code)
         print("📞 RESPONSE:", response.text)
@@ -104,8 +92,5 @@ def shopify_webhook():
     return "OK", 200
 
 
-# =========================
-# 🚀 RUN SERVER
-# =========================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=PORT)

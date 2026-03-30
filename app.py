@@ -3,47 +3,45 @@ import requests
 
 app = Flask(__name__)
 
-# 🔑 IMPORTANT — yaha apna VAPI API KEY daal
+# 🔑 API KEY (CHANGE THIS)
 VAPI_API_KEY = "cb25bf63-9caa-4719-a5fc-55bd74a7116a"
 
 
-# 🟢 HOME ROUTE (TEST)
+# 🟢 HOME ROUTE
 @app.route('/')
 def home():
     return "Server Running ✅"
 
 
-# 🟢 EXTRA TEST ROUTE
+# 🟢 TEST ROUTE
 @app.route('/test')
 def test():
     return "Working ✅"
 
 
-# 🟢 SHOPIFY WEBHOOK
+# 🟢 SHOPIFY WEBHOOK (ORDER CREATE)
 @app.route('/shopify-webhook', methods=['POST'])
 def shopify_webhook():
     data = request.json
 
-    print("🔥 WEBHOOK HIT:", data)
+    print("🔥 SHOPIFY WEBHOOK:", data)
 
-    # 🧠 Customer details extract
     customer = data.get("customer", {})
     phone = customer.get("phone")
     name = customer.get("first_name", "Customer")
+    order_id = data.get("id")
 
-    print("Customer:", name, phone)
+    print("Customer:", name, phone, "Order ID:", order_id)
 
-    # ❗ Agar phone nahi hai to skip
     if not phone:
-        print("❌ No phone number found")
+        print("❌ No phone number")
         return "No phone", 200
 
-    # 📞 Phone format fix (+91 add agar missing)
+    # 📞 Fix phone format
     if not phone.startswith("+"):
         phone = "+91" + phone
 
     try:
-        # 📞 VAPI CALL TRIGGER
         response = requests.post(
             "https://api.vapi.ai/call",
             json={
@@ -52,6 +50,12 @@ def shopify_webhook():
                 },
                 "assistant": {
                     "firstMessage": f"Namaste {name}, aapne NR Skins se order place kiya hai. Kya aap apna order confirm karte ho?"
+                },
+                "metadata": {
+                    "order_id": order_id
+                },
+                "server": {
+                    "url": "https://shopify-ai-calling.onrender.com/vapi-response"
                 }
             },
             headers={
@@ -60,14 +64,43 @@ def shopify_webhook():
             }
         )
 
-        print("📞 Call API Response:", response.text)
+        print("📞 VAPI CALL RESPONSE:", response.text)
 
     except Exception as e:
-        print("❌ Error while calling:", str(e))
+        print("❌ Call error:", str(e))
 
     return "OK", 200
 
 
-# 🟢 SERVER START
+# 🟢 VAPI RESPONSE WEBHOOK
+@app.route('/vapi-response', methods=['POST'])
+def vapi_response():
+    data = request.json
+
+    print("🧠 VAPI RESPONSE:", data)
+
+    transcript = data.get("transcript", "").lower()
+    metadata = data.get("metadata", {})
+
+    order_id = metadata.get("order_id")
+
+    if not order_id:
+        print("❌ No order ID")
+        return "OK", 200
+
+    # 🧠 YES / NO detection
+    if any(word in transcript for word in ["yes", "haan", "confirm", "kar do"]):
+        print(f"✅ Order {order_id} CONFIRMED")
+
+    elif any(word in transcript for word in ["no", "nahi", "cancel", "mat"]):
+        print(f"❌ Order {order_id} CANCELLED")
+
+    else:
+        print(f"⚠️ Order {order_id} unclear response")
+
+    return "OK", 200
+
+
+# 🚀 RUN SERVER
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

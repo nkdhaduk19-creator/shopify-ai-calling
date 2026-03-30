@@ -23,14 +23,17 @@ def shopify_webhook():
     print("🚨 NEW VERSION RUNNING 🚨")
 
     try:
-        print("\n🔥 WEBHOOK HIT 🔥")
+        print("🔥 WEBHOOK HIT 🔥")
+
+        # 👉 Full debug (VERY IMPORTANT)
+        print("📦 HEADERS:", dict(request.headers))
+        print("📦 RAW BODY:", request.data)
 
         data = request.get_json(force=True, silent=True)
-        print("📦 RAW DATA:", data)
+        print("📦 JSON DATA:", data)
 
-        # 👉 test number (trial fix)
+        # 👉 FORCE TEST NUMBER (trial fix)
         phone = "+919033074408"
-
         print("📞 FINAL PHONE:", phone)
 
         url = "https://api.vapi.ai/call"
@@ -49,8 +52,14 @@ def shopify_webhook():
         }
 
         print("🚀 CALLING VAPI...")
+        print("📤 PAYLOAD:", payload)
 
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(
+            url,
+            json=payload,
+            headers=headers,
+            timeout=15  # 👉 important
+        )
 
         print("📞 STATUS:", response.status_code)
         print("📞 RESPONSE:", response.text)

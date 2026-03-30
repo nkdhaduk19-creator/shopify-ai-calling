@@ -19,7 +19,7 @@ def test():
     return "Working ✅"
 
 
-# 🟢 SHOPIFY WEBHOOK (ORDER CREATE)
+# 🟢 SHOPIFY WEBHOOK
 @app.route('/shopify-webhook', methods=['POST'])
 def shopify_webhook():
     data = request.json
@@ -27,17 +27,26 @@ def shopify_webhook():
     print("🔥 SHOPIFY WEBHOOK:", data)
 
     customer = data.get("customer", {})
-    phone = customer.get("phone")
+    
+    # 🔥 FIXED PHONE LOGIC
+    phone = (
+        customer.get("phone") or
+        data.get("billing_address", {}).get("phone") or
+        data.get("shipping_address", {}).get("phone")
+    )
+
     name = customer.get("first_name", "Customer")
     order_id = data.get("id")
 
-    print("Customer:", name, phone, "Order ID:", order_id)
+    print("📞 FINAL PHONE:", phone)
+    print("Customer:", name, "Order ID:", order_id)
 
     if not phone:
-        print("❌ No phone number")
+        print("❌ No phone number found")
         return "No phone", 200
 
-    # 📞 Fix phone format
+    # 📞 Format fix
+    phone = phone.replace(" ", "")
     if not phone.startswith("+"):
         phone = "+91" + phone
 
@@ -101,6 +110,6 @@ def vapi_response():
     return "OK", 200
 
 
-# 🚀 RUN SERVER
+# 🚀 SERVER RUN
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

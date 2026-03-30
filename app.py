@@ -18,7 +18,7 @@ def home():
     return "Server Running ✅"
 
 
-@app.route('/shopify-webhook', methods=['POST'])
+@app.route('/shopify-webhook', methods=['POST', 'GET'])
 def shopify_webhook():
     print("🚨 NEW VERSION RUNNING 🚨")
 

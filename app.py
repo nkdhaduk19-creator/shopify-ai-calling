@@ -4,7 +4,7 @@ import json
 
 app = Flask(__name__)
 
-VAPI_API_KEY = "cb25bf63-9caa-4719-a5fc-55bd74a7116a""
+VAPI_API_KEY = "cb25bf63-9caa-4719-a5fc-55bd74a7116a"
 
 
 @app.route('/')

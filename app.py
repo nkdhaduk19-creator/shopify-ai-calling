@@ -14,6 +14,8 @@ def home():
 
 @app.route('/shopify-webhook', methods=['POST'])
 def shopify_webhook():
+    print("🚨 NEW VERSION RUNNING 🚨")   # 👈 यहीं डाल
+
     try:
         print("\n🔥 WEBHOOK HIT 🔥")
 
@@ -70,7 +72,6 @@ def shopify_webhook():
         print("❌ ERROR:", str(e))
 
     return "OK", 200
-    print("🚨 NEW VERSION RUNNING 🚨")
 
 
 if __name__ == "__main__":

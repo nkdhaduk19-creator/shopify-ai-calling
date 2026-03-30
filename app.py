@@ -19,7 +19,7 @@ def home():
 
 @app.route('/test-call')
 def test_call():
-    phone = "+919033074408"  # 👈 apna number
+    phone = "+919033074408"
 
     url = "https://api.vapi.ai/call"
 
@@ -42,11 +42,10 @@ def test_call():
         "Content-Type": "application/json"
     }
 
-    response = requests.post(url, json=payload, headers=headers)
-print("🚀 SENDING REQUEST...")
-print("📦 PAYLOAD:", payload)
+    print("🚀 SENDING REQUEST...")
+    print("📦 PAYLOAD:", payload)
 
-response = requests.post(url, json=payload, headers=headers)
+    response = requests.post(url, json=payload, headers=headers)
 
     print("📞 STATUS:", response.status_code)
     print("📞 RESPONSE:", response.text)
@@ -62,7 +61,7 @@ def shopify_webhook():
         data = request.get_json(force=True, silent=True)
         print(json.dumps(data, indent=2))
 
-        phone = "+919033074408"  # temp test
+        phone = "+919033074408"
 
         url = "https://api.vapi.ai/call"
 
@@ -84,6 +83,8 @@ def shopify_webhook():
             "Authorization": f"Bearer {VAPI_API_KEY}",
             "Content-Type": "application/json"
         }
+
+        print("🚀 SENDING FROM WEBHOOK...")
 
         response = requests.post(url, json=payload, headers=headers)
 

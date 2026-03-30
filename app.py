@@ -19,18 +19,14 @@ def home():
 
 @app.route('/test-call')
 def test_call():
+    print("🔥 TEST CALL FUNCTION HIT 🔥")
+
     phone = "+919033074408"
 
     url = "https://api.vapi.ai/call"
 
     payload = {
-        "assistant": {
-            "model": {
-                "provider": "openai",
-                "model": "gpt-4.1"
-            },
-            "firstMessage": "Namaste! Test call hai. Kya aap sun pa rahe ho?"
-        },
+        "assistantId": "d716bf80-625e-4247-b0a8-382128836042",
         "customer": {
             "number": phone
         },
@@ -42,13 +38,17 @@ def test_call():
         "Content-Type": "application/json"
     }
 
-    print("🚀 SENDING REQUEST...")
-    print("📦 PAYLOAD:", payload)
+    try:
+        print("🚀 SENDING REQUEST...")
+        print("📦 PAYLOAD:", payload)
 
-    response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers)
 
-    print("📞 STATUS:", response.status_code)
-    print("📞 RESPONSE:", response.text)
+        print("📞 STATUS:", response.status_code)
+        print("📞 RESPONSE:", response.text)
+
+    except Exception as e:
+        print("❌ ERROR:", str(e))
 
     return "CALL TRIGGERED", 200
 

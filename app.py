@@ -1,10 +1,16 @@
 from flask import Flask, request
 import requests
 import json
+import os
 
 app = Flask(__name__)
 
 VAPI_API_KEY = "cb25bf63-9caa-4719-a5fc-55bd74a7116a"
+
+# 👉 Render port fix
+PORT = int(os.environ.get("PORT", 5000))
+
+print("🔥🔥 LATEST CODE DEPLOYED 🔥🔥")
 
 
 @app.route('/')
@@ -14,7 +20,7 @@ def home():
 
 @app.route('/shopify-webhook', methods=['POST'])
 def shopify_webhook():
-    print("🚨 NEW VERSION RUNNING 🚨")   # 👈 यहीं डाल
+    print("🚨 NEW VERSION RUNNING 🚨")
 
     try:
         print("\n🔥 WEBHOOK HIT 🔥")
@@ -22,38 +28,20 @@ def shopify_webhook():
         data = request.json
         print(json.dumps(data, indent=2))
 
-        phone = None
-
-        if data.get("customer") and data["customer"].get("phone"):
-            phone = data["customer"]["phone"]
-        elif data.get("shipping_address") and data["shipping_address"].get("phone"):
-            phone = data["shipping_address"]["phone"]
-        elif data.get("billing_address") and data["billing_address"].get("phone"):
-            phone = data["billing_address"]["phone"]
-
-        print("📞 RAW PHONE:", phone)
-
-        if not phone:
-            print("⚠️ NO PHONE → USING TEST")
-            phone = "+919033074408"
-
-        phone = str(phone).replace(" ", "").replace("-", "")
-
-        if not phone.startswith("+"):
-            phone = "+91" + phone
+        # ❌ अभी ignore कर (trial में issue होता है)
+        # 👉 हमेशा verified number पे call भेज
+        phone = "+919033074408"
 
         print("📞 FINAL PHONE:", phone)
 
         url = "https://api.vapi.ai/call"
 
         payload = {
+            "assistantId": "REPLACE_WITH_YOUR_ASSISTANT_ID",  # ⚠️ IMPORTANT
             "customer": {
                 "number": phone
             },
-            "phoneNumber": "+14782156434",
-            "assistant": {
-                "firstMessage": "Namaste! Test call hai. Kya aap sun pa rahe ho?"
-            }
+            "phoneNumber": "+14782156434"
         }
 
         headers = {
@@ -75,4 +63,4 @@ def shopify_webhook():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=PORT)

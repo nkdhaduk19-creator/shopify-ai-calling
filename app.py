@@ -4,7 +4,7 @@ import json
 
 app = Flask(__name__)
 
-VAPI_API_KEY = "cb25bf63-9caa-4719-a5fc-55bd74a7116a"
+VAPI_API_KEY = "cb25bf63-9caa-4719-a5fc-55bd74a7116a""
 
 
 @app.route('/')
@@ -14,33 +14,25 @@ def home():
 
 @app.route('/shopify-webhook', methods=['POST'])
 def shopify_webhook():
-    print("\n======================")
-    print("🔥 WEBHOOK HIT 🔥")
-    print("======================")
-
     try:
-        data = request.json
-        print("📦 DATA RECEIVED")
+        print("\n🔥 WEBHOOK HIT 🔥")
 
-        # 👇 FORCE PRINT
+        data = request.json
         print(json.dumps(data, indent=2))
 
         phone = None
 
         if data.get("customer") and data["customer"].get("phone"):
             phone = data["customer"]["phone"]
-
         elif data.get("shipping_address") and data["shipping_address"].get("phone"):
             phone = data["shipping_address"]["phone"]
-
         elif data.get("billing_address") and data["billing_address"].get("phone"):
             phone = data["billing_address"]["phone"]
 
         print("📞 RAW PHONE:", phone)
 
-        # ❗ FORCE CALL EVEN IF PHONE MISSING
         if not phone:
-            print("⚠️ NO PHONE → USING TEST NUMBER")
+            print("⚠️ NO PHONE → USING TEST")
             phone = "+919033074408"
 
         phone = str(phone).replace(" ", "").replace("-", "")
@@ -56,7 +48,7 @@ def shopify_webhook():
             "customer": {
                 "number": phone
             },
-            "phoneNumber": "+14782156434",  # 🔥 MUST
+            "phoneNumber": "+14782156434",
             "assistant": {
                 "firstMessage": "Namaste! Test call hai. Kya aap sun pa rahe ho?"
             }
@@ -67,7 +59,7 @@ def shopify_webhook():
             "Content-Type": "application/json"
         }
 
-        print("🚀 CALLING VAPI NOW...")
+        print("🚀 CALLING VAPI...")
 
         response = requests.post(url, json=payload, headers=headers)
 

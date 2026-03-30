@@ -6,6 +6,10 @@ app = Flask(__name__)
 def home():
     return "Server Running ✅"
 
+@app.route('/test')
+def test():
+    return "Working ✅"
+
 @app.route('/shopify-webhook', methods=['POST'])
 def shopify_webhook():
     data = request.json
@@ -18,4 +22,5 @@ def shopify_webhook():
 
     return "OK", 200
 
-app.run(host="0.0.0.0", port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
